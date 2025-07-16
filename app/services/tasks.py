@@ -24,13 +24,13 @@ def process_image_upload(file_path: str, item_id: int):
 
         # Upload image to Firebase Storage
         file_name = os.path.basename(file_path)
-        firebase_url = firebase_service.upload_file(file_path, f"processed_images/{file_name}")
+        r2_url = r2_service.upload_file(file_path, f"processed_images/{file_name}")
 
         item.transcription = ocr_text
         item.summary = summary
         item.tags = tags
         item.actionables = actionables
-        item.image_url = firebase_url
+        item.image_url = r2_url
         db.add(item)
         db.commit()
         db.refresh(item)
