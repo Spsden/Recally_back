@@ -1,9 +1,12 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from .api.router import router as api_router
 from .database import engine
 from .models import database
+from .services.websocket_manager import start_websocket_manager
 
 database.Base.metadata.create_all(bind=engine)
 
@@ -23,6 +26,10 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api")
+
+@app.on_event("startup")
+async def startup_event():
+    await start_websocket_manager()
 
 @app.get("/")
 def read_root():

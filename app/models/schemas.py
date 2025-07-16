@@ -9,6 +9,7 @@ class ItemBase(BaseModel):
     summary: Optional[str] = None
     tags: List[str] = Field(default_factory=list)
     actionables: List[Dict[str, Any]] = Field(default_factory=list)
+    image_url: Optional[str] = None
 
 class ItemCreate(ItemBase):
     pass

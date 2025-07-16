@@ -21,6 +21,15 @@ async def upload_all(image: Optional[UploadFile] = File(None),
     if not (image or audio or note):
         raise HTTPException(status_code=400, detail="At least one of image, audio, or note must be provided.")
 
+    # Create a placeholder item immediately
+    placeholder_item_data = {"type": "mixed", "transcription": "Processing...", "summary": "Processing..."}
+    if image: placeholder_item_data["type"] = "image"
+    elif audio: placeholder_item_data["type"] = "audio"
+    elif note: placeholder_item_data["type"] = "note"
+
+    placeholder_item = items_service.create_item(db=db, item=schemas.ItemCreate(**placeholder_item_data))
+    item_id = placeholder_item.id
+
     if image:
         image_upload_dir = os.path.join(UPLOAD_DIR, "images")
         os.makedirs(image_upload_dir, exist_ok=True)
@@ -28,8 +37,7 @@ async def upload_all(image: Optional[UploadFile] = File(None),
         with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension, dir=image_upload_dir) as tmp_image:
             tmp_image.write(await image.read())
             image_path = tmp_image.name
-        process_image_upload.delay(image_path)
-        return schemas.Item(type="image", transcription="Processing...", summary="Processing...", tags=[], actionables=[])
+        process_image_upload.delay(image_path, item_id)
 
     if audio:
         audio_upload_dir = os.path.join(UPLOAD_DIR, "audio")
@@ -38,31 +46,9 @@ async def upload_all(image: Optional[UploadFile] = File(None),
         with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension, dir=audio_upload_dir) as tmp_audio:
             tmp_audio.write(await audio.read())
             audio_path = tmp_audio.name
-        process_audio_upload.delay(audio_path)
-        return schemas.Item(type="audio", transcription="Processing...", summary="Processing...", tags=[], actionables=[])
+        process_audio_upload.delay(audio_path, item_id)
 
     if note:
-        process_text_upload.delay(note)
-        return schemas.Item(type="text", transcription=note, summary="Processing...", tags=[], actionables=[])
+        process_text_upload.delay(note, item_id)
 
-
-# Remove the old /image/ endpoint as it's now handled by upload_all
-# @router.post("/image/", response_model=schemas.Item)
-# async def upload_image(file: UploadFile = File(...), db: Session = Depends(get_db)):
-#     if not os.path.exists(f"{UPLOAD_DIR}/images"):
-#         os.makedirs(f"{UPLOAD_DIR}/images")
-#     file_path = os.path.join(f"{UPLOAD_DIR}/images", file.filename)
-#     with open(file_path, "wb") as buffer:
-#         buffer.write(await file.read())
-
-#     ocr_text = llm_service.ocr_image(file_path)
-#     summary, tags, actionables = llm_service.summarize_text(ocr_text)
-
-#     item = schemas.ItemCreate(
-#         type="image",
-#         transcription=ocr_text, # Store OCR text in transcription field
-#         summary=summary,
-#         tags=tags,
-#         actionables=actionables,
-#     )
-#     return items_service.create_item(db=db, item=item)
+    return placeholder_item

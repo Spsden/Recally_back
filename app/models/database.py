@@ -16,3 +16,4 @@ class Item(Base):
     actionables = Column(MutableList.as_mutable(JSON), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     embedding = Column(MutableList.as_mutable(JSON), nullable=True)
+    image_url = Column(String, nullable=True)

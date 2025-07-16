@@ -8,3 +8,5 @@ tiktoken
 python-dotenv
 celery
 redis
+firebase-admin
+websockets
