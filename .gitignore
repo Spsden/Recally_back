@@ -1,0 +1,35 @@
+# Byte-code files
+*.pyc
+__pycache__/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Editor files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Database files
+*.db
+*.sqlite3
+recally.db
+
+# Environment variables
+.env
+.env.example
+
+# Uploaded files
+storage/uploads/
+storage/processed/
+
+# Celery beat schedule file
+celerybeat-schedule
+
+# Logs
+*.log
