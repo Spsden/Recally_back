@@ -8,5 +8,6 @@ tiktoken
 python-dotenv
 celery
 redis
-firebase-admin
 websockets
+cloudinary
+psycopg2-binary
