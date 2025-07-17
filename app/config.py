@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: str
     CLOUDINARY_API_SECRET: str
 
+    # LLM Provider Settings
+    LLM_PROVIDER: str = "openai"  # openai, ollama, or groq
+    OPENAI_API_KEY: str | None = None
+    OLLAMA_BASE_URL: str | None = "http://localhost:11434/api"
+    GROQ_API_KEY: str | None = None
+
     class Config:
         env_file = ".env"
 
