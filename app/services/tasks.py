@@ -1,5 +1,6 @@
 from ..core.celery_app import celery_app
-from ..services import llm_service, items_service, firebase_service
+from ..services import llm_service, items_service
+from ..services.cloudinary_service import cloudinary_service
 from ..models import schemas
 from ..database import SessionLocal
 import os
